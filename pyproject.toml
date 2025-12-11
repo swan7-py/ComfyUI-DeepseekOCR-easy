@@ -1,0 +1,19 @@
+[project]
+name = "ComfyUI-DeepseekOCR-easy"
+description = "一个用于适用于高版本transformers的 Deepseek-OCR 的 ComfyUI 的 插件，可以使用 Deepseek-OCR 来实现OCR任务以及图像反推"
+version = "1.0.0"
+license = {file = "LICENSE"} 
+
+
+
+[project.urls]
+Repository = "https://github.com/swan7-py/ComfyUI-DeepseekOCR-easy"
+#  Used by Comfy Registry https://registry.comfy.org
+
+
+[tool.comfy]
+PublisherId = "swan7-py"
+DisplayName = "ComfyUI-DeepseekOCR-easy"
+Icon = ""
+# "requires-comfyui" = ">=1.0.0"  # ComfyUI version compatibility
+
