@@ -28,13 +28,11 @@ cd ComfyUI-DeepseekOCR-easy
 
 ### 2. 安装模型
 
-```bash
 下载模型[DeepSeek-OCR-Latest-BF16.I64](https://huggingface.co/prithivMLmods/DeepSeek-OCR-Latest-BF16.I64)
 放置到models下的DeepSeek-OCR-Latest-BF16.I64
 注意不使用官方的模型，感谢prithivMLmods使得该模型可以用于高版本transformers
-```
 
-## 📚 模型使用
+## 📚 插件使用
 
 ### 1. 基本流程
 
