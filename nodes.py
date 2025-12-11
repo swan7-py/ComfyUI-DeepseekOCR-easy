@@ -90,7 +90,7 @@ def pil_to_tensor(pil_image: Image.Image) -> torch.Tensor:
     if pil_image.mode != 'RGB':
         pil_image = pil_image.convert('RGB')
     img_array = np.array(pil_image).astype(np.float32) / 255.0
-    img_tensor = torch.from_numpy(img_array)[None,]  # [1, H, W, C]
+    img_tensor = torch.from_numpy(img_array)  # [1, H, W, C]
     return img_tensor
 
 # ==============================
@@ -113,14 +113,19 @@ class LoadPDFtoImage:
         }
 
     RETURN_TYPES = ("IMAGE",)
-    OUTPUT_IS_LIST = (True,)
     FUNCTION = "load_pdf"
     CATEGORY = "SwanOCR"
 
     def load_pdf(self, pdf_absolute_path: str, start_page: int, end_page: int) -> Tuple[List[torch.Tensor]]:
         pil_images = load_pdf_as_images(pdf_absolute_path, start_page, end_page)
         tensors = [pil_to_tensor(img) for img in pil_images]
-        return (tensors,)
+
+        if not tensors:
+            raise ValueError("No images to process")
+        batch_tensor = torch.stack(tensors, dim=0)  # 形状: (N, H, W, C)
+        
+        print(f"[LoadPDFtoImage] Output batch shape: {batch_tensor.shape}")
+        return (batch_tensor,)
 
 # ==============================
 # Node: DeepSeek OCR from Images
@@ -181,10 +186,11 @@ class DeepSeekOCRNode:
         print(f"[DeepSeekOCR] Using prompt: {prompt}")
 
         all_md_content = []
-        pbar = ProgressBar(len(images))
+        pbar = ProgressBar(images.shape[0])
 
-        for idx, img_tensor in enumerate(images):
-            img_np = (img_tensor.squeeze().cpu().numpy() * 255).astype(np.uint8)
+        for idx in range(images.shape[0]):
+            img_tensor = images[idx]  # 提取单个图像 (H, W, C)
+            img_np = (img_tensor.cpu().numpy() * 255).astype(np.uint8)
             pil_img = Image.fromarray(img_np, mode='RGB')
 
             temp_img_path = os.path.join(result_dir, f"temp_page_{idx+1}.png")
