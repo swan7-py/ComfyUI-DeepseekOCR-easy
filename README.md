@@ -61,41 +61,14 @@ cd ComfyUI-DeepseekOCR-easy
 
 | 参数名           | 类型        | 默认值       | 说明                                                                 |
 |----------------|-----------|-----------|--------------------------------------------------------------------|
-| `images`       | IMAGE     | -         | 输入图像或 PDF 转换的图像列表（由 `LoadPDFtoImage` 提供）                      |
+| `images`       | IMAGE     | -         | 输入图像或 PDF 转换的图像（由 `LoadPDFtoImage` 提供）                      |
 | `mode`         | 选择框      | `Gundam`  | 模型大小选项：`Tiny`, `Small`, `Base`, `Large`, `Gundam`（推荐 `Gundam`） |
 | `task_type`    | 选择框      | `document`| 任务类型：`document`, `without layouts`, `other image`, `figures in document`, `general` |
 | `custom_prompt`| 文本输入框   | (空)      | 自定义提示词，优先级高于任务类型默认提示词                                 |
 
-## 📝 使用示例
-
-### 示例 1：标准文档转换
-
-1. 使用 `LoadPDFtoImage` 节点加载 PDF
-2. 连接 `DeepSeekOCRNode`，设置：
-   - `mode`: `Gundam`
-   - `task_type`: `document`
-   - `custom_prompt`: (留空)
-3. 输出将为结构化的 Markdown 文档
-
-### 示例 2：自定义提示词
-
-1. 使用 `LoadPDFtoImage` 加载 PDF
-2. 连接 `DeepSeekOCRNode`，设置：
-   - `mode`: `Large`
-   - `task_type`: `document`
-   - `custom_prompt`: `<image>\nExtract all financial figures and their values.`
-3. 输出将包含提取的财务数据
 
 ## 📌 注意事项
 
 1. **poppler 安装**：Windows 用户需要安装 poppler 并添加到系统 PATH
-2. **模型大小**：`Gundam` 模型提供最佳平衡，`Tiny` 速度最快但精度较低
-3. **路径问题**：Windows 路径使用 `M:/file.pdf` 格式（避免反斜杠转义问题）
-4. **输出文件**：结果会保存在 ComfyUI 输出目录的 `deepseek_ocr_output.md` 中
+2. **输出文件**：结果会保存在 ComfyUI 输出目录的 `deepseek_ocr_output.md` 中，每次会覆盖
 
-## 📬 获取支持
-
-- 项目仓库: [https://github.com/deepseek-ai/ComfyUI-DeepseekOCR](https://github.com/deepseek-ai/ComfyUI-DeepseekOCR)
-- 模型下载: [https://huggingface.co/deepseek-ai/DeepSeek-OCR-Latest-BF16.I64](https://huggingface.co/deepseek-ai/DeepSeek-OCR-Latest-BF16.I64)
-
-> 💡 **提示**：如需更详细的 OCR 优化，建议使用 `Gundam` 模型并设置 `task_type` 为 `document`。
