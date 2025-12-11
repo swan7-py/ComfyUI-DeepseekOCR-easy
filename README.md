@@ -15,7 +15,7 @@
 
 ```bash
 # 安装 poppler（用于 PDF 处理）
-# Windows: 下载 https://github.com/oschwartz106120/poppler-windows/releases
+# Windows: 下载 https://github.com/oschwartz10612/poppler-windows/releases
 # 下载后解压，将bin文件夹目录设置到系统环境的path中
 
 # Linux (Ubuntu/Debian):
