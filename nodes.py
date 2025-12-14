@@ -10,41 +10,6 @@ import numpy as np
 
 from comfy.utils import ProgressBar
 
-# ==============================
-# Helper: PDF → List[PIL.Image]
-# ==============================
-
-def load_pdf_as_images(pdf_path: str, start_page: int, end_page: int) -> List[Image.Image]:
-    # Normalize path (handle both Windows \ and Linux /)
-    pdf_path = os.path.normpath(pdf_path.strip())
-    
-    if not os.path.isfile(pdf_path):
-        raise FileNotFoundError(f"PDF file not found: {pdf_path}")
-    
-    if not pdf_path.lower().endswith('.pdf'):
-        raise ValueError("File must be a PDF (.pdf)")
-
-    try:
-        total_pages = len(PdfReader(pdf_path).pages)
-    except Exception as e:
-        raise ValueError(f"Failed to read PDF: {e}")
-
-    if not (1 <= start_page <= end_page <= total_pages):
-        raise ValueError(f"Invalid page range: {start_page}-{end_page} for {total_pages} pages")
-
-    images = convert_from_path(
-        pdf_path,
-        first_page=start_page,
-        last_page=end_page,
-        fmt='png',
-        thread_count=1
-    )
-    return images
-
-# ==============================
-# Helper: PIL → ComfyUI Tensor
-# ==============================
-
 def load_pdf_as_images(pdf_path: str, start_page: int, end_page: int) -> List[Image.Image]:
     # Strip whitespace and resolve path
     pdf_path = pdf_path.strip().strip('"').strip("'")
@@ -82,20 +47,12 @@ def load_pdf_as_images(pdf_path: str, start_page: int, end_page: int) -> List[Im
     )
     return images
 
-# ==============================
-# Helper: PIL → ComfyUI Tensor
-# ==============================
-
 def pil_to_tensor(pil_image: Image.Image) -> torch.Tensor:
     if pil_image.mode != 'RGB':
         pil_image = pil_image.convert('RGB')
     img_array = np.array(pil_image).astype(np.float32) / 255.0
     img_tensor = torch.from_numpy(img_array)  # [1, H, W, C]
     return img_tensor
-
-# ==============================
-# Node: Load PDF from Absolute Path
-# ==============================
 
 class LoadPDFtoImage:
     @classmethod
@@ -127,9 +84,6 @@ class LoadPDFtoImage:
         print(f"[LoadPDFtoImage] Output batch shape: {batch_tensor.shape}")
         return (batch_tensor,)
 
-# ==============================
-# Node: DeepSeek OCR from Images
-# ==============================
 
 class DeepSeekOCRNode:
     @classmethod
@@ -139,7 +93,6 @@ class DeepSeekOCRNode:
                 "images": ("IMAGE",),
                 "mode": (["Tiny", "Small", "Base", "Large", "Gundam"], {"default": "Gundam"}),
                 "task_type": (["document", "without layouts", "other image", "figures in document", "general"], {"default": "document"}),
-                "custom_prompt": ("STRING", {"default": "", "multiline": False, "placeholder": "Enter custom prompt (optional)"}),
             },
         }
 
@@ -181,7 +134,7 @@ class DeepSeekOCRNode:
             "general": "<image>\nDescribe this image in detail.",
         }
 
-        prompt = custom_prompt if custom_prompt else task_prompts.get(task_type, task_prompts["document"])
+        prompt = task_prompts.get(task_type, task_prompts["document"])
 
         print(f"[DeepSeekOCR] Using prompt: {prompt}")
 
@@ -249,9 +202,6 @@ class DeepSeekOCRNode:
         return mode_params.get(mode, (1024, 640, True))
 
 
-# ==============================
-# Registration
-# ==============================
 
 NODE_CLASS_MAPPINGS = {
     "LoadPDFtoImage": LoadPDFtoImage,
